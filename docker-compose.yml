@@ -1,0 +1,46 @@
+version: '2'
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - ${PORT_WEB}
+    volumes:
+      - ${APP_DIR}:/www
+      - ./nginx/sites:/etc/nginx/conf.d
+    networks:
+      - ndock-net
+  php:
+    image: luffdara/ndock-php:v0.1
+    volumes:
+      - ${APP_DIR}:/www
+      - ./php/conf/log.conf:/usr/local/etc/php-fpm.d/zz-log.conf
+    networks:
+      - ndock-net
+  mysql:
+    image: mysql
+    env_file:
+      - ".env"
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - ${PORT_SQL}
+    volumes:
+      - "./mysql/data:/var/lib/mysql"
+    networks:
+      - ndock-net
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=${MYSQL_HOST}
+    networks:
+      - ndock-net
+
+networks:
+  ndock-net:
+    driver: bridge
