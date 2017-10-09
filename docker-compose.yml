@@ -28,7 +28,7 @@ services:
     ports:
       - ${PORT_SQL}
     volumes:
-      - "./mysql/data:/var/lib/mysql"
+      - ${MYSQL_DATA}:/var/lib/mysql
     networks:
       - ndock-net
   phpmyadmin:
